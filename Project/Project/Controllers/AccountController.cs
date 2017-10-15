@@ -12,7 +12,7 @@ namespace Project.Controllers
     [Route("api/Account")]
     public class AccountController : Controller
     {
-        // SignUp method
+        // SignUp method api/Account
         [HttpPost]
         public ActionResult SignUp([FromBody] Register signupData)
         {
@@ -20,14 +20,14 @@ namespace Project.Controllers
             return new StatusCodeResult(StatusCodes.Status201Created);
         }
 
-        // Edit method
+        // Edit method api/Account/5
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] Register accountData)
         {
             return new StatusCodeResult(StatusCodes.Status200OK);
         }
 
-        // Remove method
+        // Remove method api/Account/5
         [HttpDelete("{id}")]
         public ActionResult Remove()
         {
