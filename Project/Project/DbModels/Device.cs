@@ -11,6 +11,7 @@ namespace Project.DbModels
         [Key]
         public string Address { get; set; }
         public string Name { get; set; }
+        
         public List<Pair> Pairs { get; set; }
     }
 }
