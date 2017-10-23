@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Project.DbModels;
 
 namespace Project
 {
@@ -24,7 +26,8 @@ namespace Project
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-           
+            services.AddDbContext<MyDbContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("MyDb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
