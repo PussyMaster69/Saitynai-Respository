@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Models;
@@ -10,13 +11,21 @@ namespace Project.Controllers
 {
     [Produces("application/json")]
     [Route("api/Scanner")]
+   
     public class ScannerController : Controller
     {
-        //[HttpPost]
-        //public ActionResult SignIn( )
-        //{
-        //    return
-        //}
+        [HttpPost]
+        public ActionResult SignIn( )
+        {
+            return Ok();
+        }
+        
+        [Authorize]
+        [HttpGet]
+        public ActionResult SignScannerGetIn( )
+        {
+            return Ok();
+        }
 
 
     }

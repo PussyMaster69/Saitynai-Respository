@@ -13,7 +13,7 @@ namespace Project.Controllers
     public class LoginController : Controller
     {
         // LogIn method
-        [HttpPost]
+        [HttpGet]
         public ActionResult LogIn([FromBody] Login loginData)
         {
             // TODO login sequence 
