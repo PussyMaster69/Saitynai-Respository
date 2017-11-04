@@ -50,31 +50,14 @@ namespace Project.Controllers
                 FirstName = "Johnny",
                 LastName = "Test"
             });
-        }
+        }       
         
-        [HttpGet]
-        public IActionResult External()
-        {
-            var authProperties = new AuthenticationProperties
-            {
-                
-            };
-
-            return new ChallengeResult("OpenIdConnect", authProperties);
-        }
         
-        [HttpGet("/authenticated")]
-        public IEnumerable<Claim> Authenticated()
-        {
-            return User.Claims;
-        }
-        
-        /*
         [HttpGet]
         public ActionResult Get()
         {
             return Ok(new List<Account> { new Account { Username = "Test" }, new Account { Username = "Test2" } });
-        }*/
+        }
 
     }
 }

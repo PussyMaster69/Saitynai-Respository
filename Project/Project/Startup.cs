@@ -18,6 +18,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.WindowsAzure.Storage;
 using Project.DbModels;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project
 {
@@ -37,60 +40,35 @@ namespace Project
             services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MyDb")));
 
-            /*services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            });*/
-            
-            
-           /* 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<MyDbContext>()
-                .AddDefaultTokenProviders();
-            
+              .AddEntityFrameworkStores<MyDbContext>()
+              .AddDefaultTokenProviders();
+
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = "117124388101-7bt8upvhefdc4j0jlo02bp7a8lpsv61e.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "bHC-dYWGJPJ5Zb6_bnGbDgKV";
-            });*/
-            /*
-            ClientId = "CLIENT_ID_GOES_HERE",
-            ClientSecret = "CLIENT_SECRET_GOES_HERE",
-            Authority = "https://accounts.google.com",
-            ResponseType = OpenIdConnectResponseType.Code,
-            GetClaimsFromUserInfoEndpoint = true,
-            SaveTokens = true,
-            Events = new OpenIdConnectEvents()
-            {
-                OnRedirectToIdentityProvider = (context) =>
+                googleOptions.ClientId = Configuration["GoogleAuthenticationId"];
+                googleOptions.ClientSecret = Configuration["GoogleAythenticationSecret"];
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    if (context.Request.Path != "/account/external")
-                    {
-                        context.Response.Redirect("/account/login");
-                        context.HandleResponse();
-                    }
+                    IssuerSigningKey = AuthenticationOptions.Key,
+                    ValidAudience = AuthenticationOptions.Audience,
+                    ValidIssuer = AuthenticationOptions.Issuer,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1)
+                };
+            });
 
-                    return Task.FromResult(0);
-                }
-            }*/
-            services.AddAuthentication(options => 
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie()
-                .AddOpenIdConnect(options => 
+            services.AddAuthorization(auth =>
             {
-                options.Authority = "https://accounts.google.com";
-                options.ClientId = "117124388101-7bt8upvhefdc4j0jlo02bp7a8lpsv61e.apps.googleusercontent.com";
-                options.ClientSecret = "bHC-dYWGJPJ5Zb6_bnGbDgKV";
-                options.CallbackPath = "/api/account/authenticated";
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.SaveTokens = true;       
-            });;
-            
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                    .RequireAuthenticatedUser().Build());
+            });
+
+
             services.AddMvc();
         }
 
@@ -102,7 +80,11 @@ namespace Project
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseMvc();
         }
+
+        
+
     }
 }
