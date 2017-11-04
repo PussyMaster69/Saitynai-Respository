@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
@@ -28,11 +29,13 @@ namespace Project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MvcOptions>(options => 
-                options.Filters.Add(new RequireHttpsAttribute()));
+//            services.Configure<MvcOptions>(options => 
+//                options.Filters.Add(new RequireHttpsAttribute()));
             services.AddMvc();
             services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MyDb")));
+            
+//            services.AddIdentity<ApplicationUser, IdentityRole>()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,11 +46,11 @@ namespace Project
                 app.UseDeveloperExceptionPage();
             }
 
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            var options = new RewriteOptions().AddRedirectToHttps();
-
-            app.UseRewriter(options);
+//            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+//            loggerFactory.AddDebug();
+//            var options = new RewriteOptions().AddRedirectToHttps();
+//
+//            app.UseRewriter(options);
             app.UseMvc();
         }
     }
