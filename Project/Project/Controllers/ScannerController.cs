@@ -12,11 +12,11 @@ namespace Project.Controllers
     [Route("api/Scanner")]
     public class ScannerController : Controller
     {
-        //[HttpPost]
-        //public ActionResult SignIn( )
-        //{
-        //    return
-        //}
+        [HttpPost]
+        public ActionResult SignIn()
+        {
+            return new StatusCodeResult(StatusCodes.Status200OK);
+        }
 
 
     }
