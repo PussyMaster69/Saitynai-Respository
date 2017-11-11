@@ -2,19 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.WindowsAzure.Storage;
 using Project.DbModels;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project
 {
@@ -29,44 +35,56 @@ namespace Project
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-//            services.Configure<MvcOptions>(options => 
-//                options.Filters.Add(new RequireHttpsAttribute()));
-            services.AddMvc();
+        {    
+            
             services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MyDb")));
 
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<MyDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<IdentityUser, IdentityRole>()
+              .AddEntityFrameworkStores<MyDbContext>()
+              .AddDefaultTokenProviders();
+
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            });
-            
-            services.ConfigureApplicationCookie(options =>
-                options.Events.OnRedirectToLogin = context =>
+                googleOptions.ClientId = Configuration["GoogleAuthenticationId"];
+                googleOptions.ClientSecret = Configuration["GoogleAythenticationSecret"];
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    context.Response.StatusCode = 401;
-                    return Task.CompletedTask;
-                }
-            );
+                    IssuerSigningKey = AuthenticationOptions.Key,
+                    ValidAudience = AuthenticationOptions.Audience,
+                    ValidIssuer = AuthenticationOptions.Issuer,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1)
+                };
+            });
+
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                    .RequireAuthenticatedUser().Build());
+            });
+
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-//            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-//            loggerFactory.AddDebug();
-//            var options = new RewriteOptions().AddRedirectToHttps();
-//
-//            app.UseRewriter(options);
+            app.UseAuthentication();
             app.UseMvc();
         }
+
+        
+
     }
 }
