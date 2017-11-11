@@ -229,13 +229,13 @@ namespace Project.Migrations
 
                     b.Property<string>("FriendlyName");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("SysUserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceAddress");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("SysUserId")
                         .IsUnique();
 
                     b.ToTable("Pairs");
@@ -255,7 +255,7 @@ namespace Project.Migrations
                     b.ToTable("Scanners");
                 });
 
-            modelBuilder.Entity("Project.DbModels.User", b =>
+            modelBuilder.Entity("Project.DbModels.SysUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -349,16 +349,16 @@ namespace Project.Migrations
                         .WithMany("Pairs")
                         .HasForeignKey("DeviceAddress");
 
-                    b.HasOne("Project.DbModels.User", "User")
+                    b.HasOne("Project.DbModels.SysUser", "SysUser")
                         .WithOne("Pair")
-                        .HasForeignKey("Project.DbModels.Pair", "UserId");
+                        .HasForeignKey("Project.DbModels.Pair", "SysUserId");
                 });
 
-            modelBuilder.Entity("Project.DbModels.User", b =>
+            modelBuilder.Entity("Project.DbModels.SysUser", b =>
                 {
                     b.HasOne("Project.DbModels.Scanner", "Scanner")
-                        .WithOne("User")
-                        .HasForeignKey("Project.DbModels.User", "ScannerId");
+                        .WithOne("SysUser")
+                        .HasForeignKey("Project.DbModels.SysUser", "ScannerId");
                 });
 #pragma warning restore 612, 618
         }

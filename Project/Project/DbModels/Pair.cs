@@ -8,7 +8,7 @@ namespace Project.DbModels
         public int Id { get; set; }
         public string FriendlyName { get; set; }
         
-        public User User { get; set; }
+        public SysUser SysUser { get; set; }
         public Device Device { get; set; }
         public List<ConnectionHistory> ConnectionHistories { get; set; }
         public List<ActiveDevice> ActiveDevices { get; set; }

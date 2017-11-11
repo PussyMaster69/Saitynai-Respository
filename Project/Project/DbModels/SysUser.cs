@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Project.DbModels
 {
-    public class User
+    public class SysUser
     {
         public string Id { get; set; }
         public string Username { get; set; }

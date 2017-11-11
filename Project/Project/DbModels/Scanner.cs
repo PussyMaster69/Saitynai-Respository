@@ -9,6 +9,6 @@ namespace Project.DbModels
         public int State { get; set; }
         public DateTime Datetime { get; set; }
         
-        public User User { get; set; }
+        public SysUser SysUser { get; set; }
     }
 }

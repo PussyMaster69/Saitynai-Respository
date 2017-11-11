@@ -1,9 +1,7 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +14,6 @@ namespace Project.Controllers
     public class AccountController : Controller
     {
         // SignUp method api/Account
-        
         [HttpPost]
         public ActionResult SignUp([FromBody] Register signupData)
         {
@@ -51,30 +48,17 @@ namespace Project.Controllers
                 LastName = "Test"
             });
         }
-        
-        [HttpGet]
-        public IActionResult External()
-        {
-            var authProperties = new AuthenticationProperties
-            {
-                
-            };
 
-            return new ChallengeResult("OpenIdConnect", authProperties);
-        }
-        
-        [HttpGet("/authenticated")]
-        public IEnumerable<Claim> Authenticated()
-        {
-            return User.Claims;
-        }
-        
-        /*
         [HttpGet]
         public ActionResult Get()
         {
             return Ok(new List<Account> { new Account { Username = "Test" }, new Account { Username = "Test2" } });
-        }*/
+        }
 
+//        [HttpGet("google-login")]
+//        public ActionResult Get()
+//        {
+//            return Ok(new List<Account> { new Account { Username = "Test" }, new Account { Username = "Test2" } });
+//        }
     }
 }

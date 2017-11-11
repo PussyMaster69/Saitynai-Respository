@@ -1,22 +1,19 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.WindowsAzure.Storage;
 using Project.DbModels;
 
 namespace Project
@@ -32,76 +29,43 @@ namespace Project
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {    
-            
+        {
+//            services.Configure<MvcOptions>(options => 
+//                options.Filters.Add(new RequireHttpsAttribute()));
+            services.AddMvc();
             services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MyDb")));
 
-            /*services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            });*/
-            
-            
-           /* 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<MyDbContext>()
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<MyDbContext>()
                 .AddDefaultTokenProviders();
-            
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = "117124388101-7bt8upvhefdc4j0jlo02bp7a8lpsv61e.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "bHC-dYWGJPJ5Zb6_bnGbDgKV";
-            });*/
-            /*
-            ClientId = "CLIENT_ID_GOES_HERE",
-            ClientSecret = "CLIENT_SECRET_GOES_HERE",
-            Authority = "https://accounts.google.com",
-            ResponseType = OpenIdConnectResponseType.Code,
-            GetClaimsFromUserInfoEndpoint = true,
-            SaveTokens = true,
-            Events = new OpenIdConnectEvents()
-            {
-                OnRedirectToIdentityProvider = (context) =>
-                {
-                    if (context.Request.Path != "/account/external")
-                    {
-                        context.Response.Redirect("/account/login");
-                        context.HandleResponse();
-                    }
-
-                    return Task.FromResult(0);
-                }
-            }*/
-            services.AddAuthentication(options => 
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie()
-                .AddOpenIdConnect(options => 
-            {
-                options.Authority = "https://accounts.google.com";
-                options.ClientId = "117124388101-7bt8upvhefdc4j0jlo02bp7a8lpsv61e.apps.googleusercontent.com";
-                options.ClientSecret = "bHC-dYWGJPJ5Zb6_bnGbDgKV";
-                options.CallbackPath = "/api/account/authenticated";
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.SaveTokens = true;       
-            });;
+                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
             
-            services.AddMvc();
+            services.ConfigureApplicationCookie(options =>
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                }
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+//            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+//            loggerFactory.AddDebug();
+//            var options = new RewriteOptions().AddRedirectToHttps();
+//
+//            app.UseRewriter(options);
             app.UseMvc();
         }
     }
