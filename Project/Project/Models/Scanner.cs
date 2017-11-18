@@ -7,6 +7,8 @@ namespace Project.Models
 {
     public class Scanner
     {
-        public string Id { get; set; }
+        public string Ip { get; set; }
+        public int State { get; set; }
+        public DateTime Datetime { get; set; }
     }
 }

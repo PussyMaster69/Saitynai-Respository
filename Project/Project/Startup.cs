@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,39 +35,37 @@ namespace Project
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {    
-            
+        {
             services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MyDb")));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-              .AddEntityFrameworkStores<MyDbContext>()
-              .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<MyDbContext>()
+                .AddDefaultTokenProviders();
 
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = Configuration["GoogleAuthenticationId"];
-                googleOptions.ClientSecret = Configuration["GoogleAythenticationSecret"];
-            })
-            .AddJwtBearer(options => {
-                options.TokenValidationParameters = new TokenValidationParameters
+            services.AddAuthentication()
+                .AddGoogle(googleOptions =>
                 {
-                    IssuerSigningKey = AuthenticationOptions.Key,
-                    ValidAudience = AuthenticationOptions.Audience,
-                    ValidIssuer = AuthenticationOptions.Issuer,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1)
-                };
-            });
+                    // client_id:521989596497-9okha7r04b01fe5giagpdos156e5ij0c.apps.googleusercontent.com
+                    // client_secret:I4-LTzwJLth-OURxEx5Gj8c9
+                    googleOptions.ClientId = "521989596497-9okha7r04b01fe5giagpdos156e5ij0c.apps.googleusercontent.com";
+                    googleOptions.ClientSecret = "I4-LTzwJLth-OURxEx5Gj8c9";
+                })
+                .AddJwtBearer(options =>
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = AuthenticationOptions.Key,
+                        ValidAudience = AuthenticationOptions.Audience,
+                        ValidIssuer = AuthenticationOptions.Issuer,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromMinutes(1)
+                    });
 
             services.AddAuthorization(auth =>
-            {
                 auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                    .RequireAuthenticatedUser().Build());
-            });
-
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build()));
 
             services.AddMvc();
         }
@@ -83,8 +81,5 @@ namespace Project
             app.UseAuthentication();
             app.UseMvc();
         }
-
-        
-
     }
 }

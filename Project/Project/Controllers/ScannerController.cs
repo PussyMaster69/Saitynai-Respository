@@ -11,18 +11,17 @@ namespace Project.Controllers
 {
     [Produces("application/json")]
     [Route("api/Scanner")]
-   
     public class ScannerController : Controller
     {
         [HttpPost]
-        public ActionResult SignIn( )
+        public ActionResult CreateScanner()
         {
             return Ok();
         }
         
         [Authorize]
         [HttpGet]
-        public ActionResult SignScannerGetIn( )
+        public ActionResult Get()
         {
             return Ok();
         }

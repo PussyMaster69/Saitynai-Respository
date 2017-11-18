@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Models;
@@ -12,6 +13,7 @@ namespace Project.Controllers
     [Route("api/Device")]
     public class DeviceController : Controller
     {
+        [Authorize]
         [HttpPost]
         public ActionResult Pair([FromBody] Device device)
         { 

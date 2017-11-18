@@ -1,54 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Project.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Tokens;
+using Project.Models;
 
 namespace Project.Controllers
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/Login")]
     public class LoginController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginController(SignInManager<IdentityUser> signInManager)
+        public LoginController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
-        }
-
-        // LogIn method
-        [HttpGet]
-        public ActionResult LogIn([FromBody] Login loginData)
-        {
-            // TODO login sequence 
-            return new StatusCodeResult(StatusCodes.Status201Created);
-        }
-        
-        [HttpGet]
-        public ActionResult LogIn()
-        {
-            // TODO login sequence 
-            return new StatusCodeResult(StatusCodes.Status200OK);
+            _userManager = userManager;
         }
 
         // LogIn method
         [Route("External")]
         [HttpGet]
-        public ActionResult ExternalLogin(string provider="Google")
+        public ActionResult ExternalLogin(string provider = "Google")
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = "/api/Login/ExternalCallback";
+            const string redirectUrl = "/api/Login/ExternalCallback";
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
@@ -60,32 +44,39 @@ namespace Project.Controllers
         {
             if (remoteError != null)
             {
-                //Error when validating externally
                 return BadRequest();
             }
+            
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                //No info returned
-                return RedirectToAction(nameof(Login));
+                return RedirectToAction(nameof(LoginFail));
             }
 
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
             //Register or login user here
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                await _userManager.CreateAsync(new IdentityUser
+                {
+                    Email = email,
+                    UserName = email
+                });
+            }
 
             //Because we're not saving users, just generate and send JWT token
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var token = GenerateToken(email);
             return Ok(token);
         }
 
         private string GenerateToken(string email)
         {
+            var identity = new ClaimsIdentity(
+                new GenericIdentity(email, "TokenAuth"));
             var expiresIn = DateTime.UtcNow + TimeSpan.FromMinutes(120);
             var handler = new JwtSecurityTokenHandler();
-            ClaimsIdentity identity = new ClaimsIdentity(
-                new GenericIdentity(email, "TokenAuth")
-            );
-
             var securityToken = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Issuer = AuthenticationOptions.Issuer,
@@ -94,14 +85,14 @@ namespace Project.Controllers
                 Subject = identity,
                 Expires = expiresIn
             });
+
             return handler.WriteToken(securityToken);
         }
 
-        // LogOut method
-        [HttpDelete]
-        public ActionResult LogOut()
+        [HttpGet]
+        public ActionResult LoginFail()
         {
-            return new StatusCodeResult(StatusCodes.Status200OK);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }
 }

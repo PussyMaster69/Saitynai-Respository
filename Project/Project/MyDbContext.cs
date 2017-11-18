@@ -1,12 +1,12 @@
-﻿﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Project.DbModels;
 
-namespace Project.DbModels
+namespace Project
 {
     public class MyDbContext : IdentityDbContext<IdentityUser>
-    {
-        public DbSet<SysUser> SysUsers { get; set; }
+    {   
         public DbSet<Pair> Pairs { get; set; }
         public DbSet<Device> Devices { get; set; }
         public DbSet<ConnectionHistory> ConnectionHistories { get; set; }

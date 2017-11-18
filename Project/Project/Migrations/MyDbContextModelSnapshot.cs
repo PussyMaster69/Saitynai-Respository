@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Project.DbModels;
+using Project;
 using System;
 
 namespace Project.Migrations
@@ -229,59 +229,33 @@ namespace Project.Migrations
 
                     b.Property<string>("FriendlyName");
 
-                    b.Property<string>("SysUserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceAddress");
 
-                    b.HasIndex("SysUserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Pairs");
                 });
 
             modelBuilder.Entity("Project.DbModels.Scanner", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Ip")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Datetime");
 
                     b.Property<int>("State");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Ip");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Scanners");
-                });
-
-            modelBuilder.Entity("Project.DbModels.SysUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccessLevel");
-
-                    b.Property<DateTime>("Datetime");
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("Lastname");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Password");
-
-                    b.Property<int?>("ScannerId");
-
-                    b.Property<string>("Username");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScannerId")
-                        .IsUnique();
-
-                    b.ToTable("SysUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -349,16 +323,16 @@ namespace Project.Migrations
                         .WithMany("Pairs")
                         .HasForeignKey("DeviceAddress");
 
-                    b.HasOne("Project.DbModels.SysUser", "SysUser")
-                        .WithOne("Pair")
-                        .HasForeignKey("Project.DbModels.Pair", "SysUserId");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Project.DbModels.SysUser", b =>
+            modelBuilder.Entity("Project.DbModels.Scanner", b =>
                 {
-                    b.HasOne("Project.DbModels.Scanner", "Scanner")
-                        .WithOne("SysUser")
-                        .HasForeignKey("Project.DbModels.SysUser", "ScannerId");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
