@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Tokens;
 using Project.Models;
 
@@ -27,8 +26,8 @@ namespace Project.Controllers
         }
 
         // LogIn method
-        [Route("External")]
         [HttpGet]
+        [Route("External")]
         public ActionResult ExternalLogin(string provider = "Google")
         {
             // Request a redirect to the external login provider.

@@ -2,11 +2,11 @@
 
 namespace Project.DbModels
 {
-    public class ConnectionHistory
+    public class ConnectionHistoryTableModel
     {
         public int Id { get; set; }
         public DateTime Datetime { get; set; }
         
-        public Pair Pair { get; set; }
+        public PairTableModel Pair { get; set; }
     }
 }

@@ -176,7 +176,7 @@ namespace Project.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Project.DbModels.ActiveDevice", b =>
+            modelBuilder.Entity("Project.DbModels.ActiveDeviceTableModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -192,7 +192,7 @@ namespace Project.Migrations
                     b.ToTable("ActiveDevices");
                 });
 
-            modelBuilder.Entity("Project.DbModels.ConnectionHistory", b =>
+            modelBuilder.Entity("Project.DbModels.ConnectionHistoryTableModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -208,7 +208,7 @@ namespace Project.Migrations
                     b.ToTable("ConnectionHistories");
                 });
 
-            modelBuilder.Entity("Project.DbModels.Device", b =>
+            modelBuilder.Entity("Project.DbModels.DeviceTableModel", b =>
                 {
                     b.Property<string>("Address")
                         .ValueGeneratedOnAdd();
@@ -220,12 +220,14 @@ namespace Project.Migrations
                     b.ToTable("Devices");
                 });
 
-            modelBuilder.Entity("Project.DbModels.Pair", b =>
+            modelBuilder.Entity("Project.DbModels.PairTableModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("DeviceAddress");
+                    b.Property<string>("DeviceId");
+
+                    b.Property<string>("DeviceTableModelAddress");
 
                     b.Property<string>("FriendlyName");
 
@@ -233,29 +235,43 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceAddress");
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("DeviceTableModelAddress");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Pairs");
                 });
 
-            modelBuilder.Entity("Project.DbModels.Scanner", b =>
+            modelBuilder.Entity("Project.DbModels.ScannerTableModel", b =>
                 {
-                    b.Property<string>("Ip")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Datetime");
+
+                    b.Property<string>("Ip");
 
                     b.Property<int>("State");
 
                     b.Property<string>("UserId");
 
-                    b.HasKey("Ip");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Scanners");
+                });
+
+            modelBuilder.Entity("Project.Models.Device", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Device");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -303,32 +319,36 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Project.DbModels.ActiveDevice", b =>
+            modelBuilder.Entity("Project.DbModels.ActiveDeviceTableModel", b =>
                 {
-                    b.HasOne("Project.DbModels.Pair", "Pair")
+                    b.HasOne("Project.DbModels.PairTableModel", "Pair")
                         .WithMany("ActiveDevices")
                         .HasForeignKey("PairId");
                 });
 
-            modelBuilder.Entity("Project.DbModels.ConnectionHistory", b =>
+            modelBuilder.Entity("Project.DbModels.ConnectionHistoryTableModel", b =>
                 {
-                    b.HasOne("Project.DbModels.Pair", "Pair")
+                    b.HasOne("Project.DbModels.PairTableModel", "Pair")
                         .WithMany("ConnectionHistories")
                         .HasForeignKey("PairId");
                 });
 
-            modelBuilder.Entity("Project.DbModels.Pair", b =>
+            modelBuilder.Entity("Project.DbModels.PairTableModel", b =>
                 {
-                    b.HasOne("Project.DbModels.Device", "Device")
+                    b.HasOne("Project.Models.Device", "Device")
+                        .WithMany()
+                        .HasForeignKey("DeviceId");
+
+                    b.HasOne("Project.DbModels.DeviceTableModel")
                         .WithMany("Pairs")
-                        .HasForeignKey("DeviceAddress");
+                        .HasForeignKey("DeviceTableModelAddress");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Project.DbModels.Scanner", b =>
+            modelBuilder.Entity("Project.DbModels.ScannerTableModel", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

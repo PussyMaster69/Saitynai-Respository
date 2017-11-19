@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace Project.DbModels
 {
-    public class ActiveDevice
+    public class ActiveDeviceTableModel
     {
         public int Id { get; set; }
         public DateTime Datetime { get; set; }
         
-        public Pair Pair { get; set; }
+        public PairTableModel Pair { get; set; }
     }
 }

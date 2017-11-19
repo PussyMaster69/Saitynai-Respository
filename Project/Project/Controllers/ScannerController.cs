@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Project.DbModels;
 using Project.Models;
 
 namespace Project.Controllers
@@ -13,20 +12,50 @@ namespace Project.Controllers
     [Route("api/Scanner")]
     public class ScannerController : Controller
     {
-        [HttpPost]
-        public ActionResult CreateScanner()
+        private readonly MyDbContext _dbContext;
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public ScannerController(MyDbContext dbContext, UserManager<IdentityUser> userManager)
         {
-            return Ok();
+            _dbContext = dbContext;
+            _userManager = userManager;
         }
-        
-        [Authorize]
-        [HttpGet]
+
+        [HttpPost]
+        [Authorize("Bearer")]
+        public ActionResult CreateScanner([FromBody] Scanner scanner)
+        {
+            // See's if there are any 'Scanners' entries that shares the same Ip and User
+            var sharedEntriesCount = _dbContext.Scanners.Count(
+                s => s.Ip == scanner.Ip && s.User.Email == User.Identity.Name
+            );
+
+            // A count that is greater than zero, indicates a conflict
+            if (sharedEntriesCount > 0)
+                return new StatusCodeResult(StatusCodes.Status409Conflict);
+
+            // If there is no conflict, creates a new 'Scanner' entry & stores in DB
+            var scannerTableData = new ScannerTableModel
+            {
+                Ip = scanner.Ip,
+                User = _userManager.FindByNameAsync(User.Identity.Name).Result,
+                Datetime = scanner.Datetime,
+                State = Scanner.Inactive
+            };
+            var entityEntry = _dbContext.Add(scannerTableData);
+            _dbContext.SaveChanges();
+
+            // Returns 201Created status code and a location header with a url to the created entrie
+            var scannerId = entityEntry.Entity.Id;
+            return CreatedAtRoute("GetById", new { id = scannerId }, null);
+        }
+
+        [HttpGet("{id}", Name = "GetById")]
+        [Authorize("Bearer")]
         public ActionResult Get()
         {
             return Ok();
         }
-
-
     }
 }
 
