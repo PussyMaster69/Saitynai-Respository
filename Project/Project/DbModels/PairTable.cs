@@ -4,14 +4,14 @@ using Project.Models;
 
 namespace Project.DbModels
 {
-    public class PairTableModel
+    public class PairTable
     {
         public int Id { get; set; }
         public string FriendlyName { get; set; }
         
         public IdentityUser User { get; set; }
-        public Device Device { get; set; }
-        public List<ConnectionHistoryTableModel> ConnectionHistories { get; set; }
-        public List<ActiveDeviceTableModel> ActiveDevices { get; set; }
+        public DeviceTable Device { get; set; }
+        public List<ConnectionHistoryTable> ConnectionHistories { get; set; }
+        public List<ActiveDeviceTable> ActiveDevices { get; set; }
     }
 }

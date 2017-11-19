@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Project.DbModels
 {
-    public class DeviceTableModel
+    public class DeviceTable
     {
         [Key]
         public string Address { get; set; }
         public string Name { get; set; }
         
-        public List<PairTableModel> Pairs { get; set; }
+        public List<PairTable> Pairs { get; set; }
     }
 }

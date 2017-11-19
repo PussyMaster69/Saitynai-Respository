@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Project.DbModels;
 using Project.Models;
 
@@ -35,18 +39,17 @@ namespace Project.Controllers
                 return new StatusCodeResult(StatusCodes.Status409Conflict);
 
             // If there is no conflict, creates a new 'Scanner' entry & stores in DB
-            var scannerTableData = new ScannerTableModel
+            var scannerTableData = new ScannerTable
             {
                 Ip = scanner.Ip,
                 User = _userManager.FindByNameAsync(User.Identity.Name).Result,
-                Datetime = scanner.Datetime,
-                State = Scanner.Inactive
+                Datetime = scanner.Datetime
             };
-            var entityEntry = _dbContext.Add(scannerTableData);
+            _dbContext.Entry(scannerTableData).State = EntityState.Added;
             _dbContext.SaveChanges();
 
-            // Returns 201Created status code and a location header with a url to the created entrie
-            var scannerId = entityEntry.Entity.Id;
+            // Returns 201Created status code and a location header with a url to the created entry
+            var scannerId = scannerTableData.Id;
             return CreatedAtRoute("GetById", new { id = scannerId }, null);
         }
 
@@ -54,22 +57,45 @@ namespace Project.Controllers
         [Authorize("Bearer")]
         public ActionResult GetScanner(int id)
         {
-            // Finds entity with ID
-            var scannerEntity = _dbContext.Scanners.Find(id);
+            // Finds entity with ID that belongs to the current user
+            var scannerEntity = _dbContext.Scanners.FirstOrDefault(s =>
+                s.Id == id && s.User.Email == User.Identity.Name);
             
             // If no entity was found, return a 404NotFound code
             if (scannerEntity == null) 
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
             
-            // If an entity was found, return a scanner object derived from the entity
+            // If an entity was found, return a scanner object derived from that entity
             Scanner scanner = new Scanner()
             {
                 Id = id,
                 Ip = scannerEntity.Ip,
-                Datetime = scannerEntity.Datetime,
-                State = scannerEntity.State
+                Datetime = scannerEntity.Datetime            
             };
             return Ok(scanner);
+        }
+
+        [HttpGet]
+        [Authorize("Bearer")]
+        public ActionResult GetAllScanners()
+        {
+            // Finds all scanners entries that belong to the current user
+            var scannerEntries = _dbContext.Scanners.Where(s => s.User.Email == User.Identity.Name);
+            
+            // Return a list of scanner objects to the user
+            var entryCount = scannerEntries.Count();
+            List<Scanner> scannersList = new List<Scanner>(entryCount);
+            foreach (var entry in scannerEntries)
+            {
+                var scanner = new Scanner()
+                {
+                    Id = entry.Id,
+                    Ip = entry.Ip,
+                    Datetime = entry.Datetime
+                };
+                scannersList.Add(scanner);
+            }
+            return Ok(scannersList);
         }
 
         [HttpPut("{id}")]
@@ -77,51 +103,36 @@ namespace Project.Controllers
         public ActionResult UpdateScanner(int id, [FromBody] Scanner scanner)
         {
             // Finds entity with ID
-            var scannerEntity = _dbContext.Scanners.Find(id);
+            var scannerEntity = _dbContext.Scanners.FirstOrDefault(s =>
+                s.Id == id && s.User.Email == User.Identity.Name);
             
             // If no entity was found, return a 404NotFound code
             if (scannerEntity == null) 
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-            return Ok(scanner);
+            // Updates scanner datetime timestamp & saves it to the database
+            scannerEntity.Datetime = scanner.Datetime;
+            _dbContext.Entry(scannerEntity).State = EntityState.Modified;
+            _dbContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize("Bearer")]
+        public ActionResult DeleteScanner(int id)
+        {
+            // Finds entity with ID
+            var scannerEntity = _dbContext.Scanners.FirstOrDefault(s =>
+                s.Id == id && s.User.Email == User.Identity.Name);
+            
+            // If no entity was found, return a 404NotFound code
+            if (scannerEntity == null) 
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+
+            // Deletes the given entity
+            _dbContext.Entry(scannerEntity).State = EntityState.Deleted;
+            _dbContext.SaveChanges();
+            return Ok();
         }
     }
 }
-
-//[HttpGet]
-//public ActionResult Get()
-//{
-//    return Ok(new List<Scanner> { new Scanner { Id = "Test" }, new Scanner { Id = "Test2" } });
-//}
-
-//[HttpGet("{id}")]
-//public ActionResult Get(string id)
-//{
-//    return Ok(new Scanner { Id = "Test" });
-//}
-
-//[HttpPost]
-//public StatusCodeResult Post([FromBody] Scanner scanner)
-//{
-//    //Bla vla bla
-//    return new StatusCodeResult(StatusCodes.Status201Created);
-//}
-
-//[HttpPut("{id}")]
-//public StatusCodeResult Put([FromBody] Scanner scanner)
-//{
-//    //TODO Implement update logic
-//    return new StatusCodeResult(StatusCodes.Status200OK);
-//}
-
-//[HttpDelete("{id}")]
-//public StatusCodeResult Delete(string id)
-//{
-//    var exists = true;
-//    if (!exists)
-//    {
-//        return new StatusCodeResult(StatusCodes.Status404NotFound);
-//    }
-//    //TODO Implement update logic
-//    return new StatusCodeResult(StatusCodes.Status200OK);
-//}
