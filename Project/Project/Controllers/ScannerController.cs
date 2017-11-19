@@ -52,9 +52,38 @@ namespace Project.Controllers
 
         [HttpGet("{id}", Name = "GetById")]
         [Authorize("Bearer")]
-        public ActionResult Get()
+        public ActionResult GetScanner(int id)
         {
-            return Ok();
+            // Finds entity with ID
+            var scannerEntity = _dbContext.Scanners.Find(id);
+            
+            // If no entity was found, return a 404NotFound code
+            if (scannerEntity == null) 
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            
+            // If an entity was found, return a scanner object derived from the entity
+            Scanner scanner = new Scanner()
+            {
+                Id = id,
+                Ip = scannerEntity.Ip,
+                Datetime = scannerEntity.Datetime,
+                State = scannerEntity.State
+            };
+            return Ok(scanner);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize("Bearer")]
+        public ActionResult UpdateScanner(int id, [FromBody] Scanner scanner)
+        {
+            // Finds entity with ID
+            var scannerEntity = _dbContext.Scanners.Find(id);
+            
+            // If no entity was found, return a 404NotFound code
+            if (scannerEntity == null) 
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+
+            return Ok(scanner);
         }
     }
 }
