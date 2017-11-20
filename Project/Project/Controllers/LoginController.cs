@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -18,9 +19,12 @@ namespace Project.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public LoginController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public LoginController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _userManager = userManager;
         }
@@ -58,22 +62,49 @@ namespace Project.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                await _userManager.CreateAsync(new IdentityUser
+                await CreateRoles();
+                var result = await _userManager.CreateAsync(new IdentityUser
                 {
                     Email = email,
                     UserName = email
                 });
+                if (result.Succeeded)
+                {
+                    user = await _userManager.FindByEmailAsync(email);
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
+                
             }
 
             //Because we're not saving users, just generate and send JWT token
             var token = GenerateToken(email);
             return Ok(token);
         }
+        
+        private async Task CreateRoles()
+        {
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                var role = new IdentityRole {Name = "User"};
+                await _roleManager.CreateAsync(role);
+            }
+            
+            if (!await _roleManager.RoleExistsAsync("Administrator"))
+            {
+                var role = new IdentityRole {Name = "Administrator"};
+                await _roleManager.CreateAsync(role);
+            }
+        }
 
-        private string GenerateToken(string email)
+        private async Task<string> GenerateToken(string email)
         {
             var identity = new ClaimsIdentity(
                 new GenericIdentity(email, "TokenAuth"));
+            var user = await _userManager.FindByEmailAsync(email);
+            foreach (var role in await _userManager.GetRolesAsync(user))
+            {
+                identity.AddClaim(new Claim("role", role));
+            }
             var expiresIn = DateTime.UtcNow + TimeSpan.FromMinutes(120);
             var handler = new JwtSecurityTokenHandler();
             var securityToken = handler.CreateToken(new SecurityTokenDescriptor

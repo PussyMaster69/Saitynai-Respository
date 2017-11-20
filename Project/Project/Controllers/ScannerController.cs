@@ -50,10 +50,10 @@ namespace Project.Controllers
 
             // Returns 201Created status code and a location header with a url to the created entry
             var scannerId = scannerTableData.Id;
-            return CreatedAtRoute("GetById", new { id = scannerId }, null);
+            return CreatedAtRoute("Scanner/GetById", new { id = scannerId }, null);
         }
 
-        [HttpGet("{id}", Name = "GetById")]
+        [HttpGet("{id}", Name = "Scanner/GetById")]
         [Authorize("Bearer")]
         public ActionResult GetScanner(int id)
         {
@@ -81,9 +81,13 @@ namespace Project.Controllers
         {
             // Finds all scanners entries that belong to the current user
             var scannerEntries = _dbContext.Scanners.Where(s => s.User.Email == User.Identity.Name);
+            var entryCount = scannerEntries.Count();
+            
+            // If no entities were found, return a 404NotFound code
+            if (entryCount <= 0)
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
             
             // Return a list of scanner objects to the user
-            var entryCount = scannerEntries.Count();
             List<Scanner> scannersList = new List<Scanner>(entryCount);
             foreach (var entry in scannerEntries)
             {
@@ -99,7 +103,7 @@ namespace Project.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize("Bearer")]
+        [Authorize(Policy = "Bearer")]
         public ActionResult UpdateScanner(int id, [FromBody] Scanner scanner)
         {
             // Finds entity with ID
@@ -118,7 +122,7 @@ namespace Project.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize("Bearer")]
+        [Authorize(Policy = "Bearer")]
         public ActionResult DeleteScanner(int id)
         {
             // Finds entity with ID

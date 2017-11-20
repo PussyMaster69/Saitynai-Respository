@@ -6,7 +6,7 @@ namespace Project.DbModels
     {
         public int Id { get; set; }
         public DateTime Datetime { get; set; }
-        
         public PairTable Pair { get; set; }
+        public ScannerTable Scanner { get; set; }
     }
 }

@@ -181,13 +181,7 @@ namespace Project.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Datetime");
-
-                    b.Property<int?>("PairId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PairId");
 
                     b.ToTable("ActiveDevices");
                 });
@@ -201,9 +195,13 @@ namespace Project.Migrations
 
                     b.Property<int?>("PairId");
 
+                    b.Property<int?>("ScannerId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PairId");
+
+                    b.HasIndex("ScannerId");
 
                     b.ToTable("ConnectionHistories");
                 });
@@ -303,24 +301,21 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Project.DbModels.ActiveDeviceTable", b =>
-                {
-                    b.HasOne("Project.DbModels.PairTable", "Pair")
-                        .WithMany("ActiveDevices")
-                        .HasForeignKey("PairId");
-                });
-
             modelBuilder.Entity("Project.DbModels.ConnectionHistoryTable", b =>
                 {
                     b.HasOne("Project.DbModels.PairTable", "Pair")
-                        .WithMany("ConnectionHistories")
+                        .WithMany()
                         .HasForeignKey("PairId");
+
+                    b.HasOne("Project.DbModels.ScannerTable", "Scanner")
+                        .WithMany()
+                        .HasForeignKey("ScannerId");
                 });
 
             modelBuilder.Entity("Project.DbModels.PairTable", b =>
                 {
                     b.HasOne("Project.DbModels.DeviceTable", "Device")
-                        .WithMany("Pairs")
+                        .WithMany()
                         .HasForeignKey("DeviceAddress");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
