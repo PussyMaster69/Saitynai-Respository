@@ -49,8 +49,9 @@ namespace Project.Controllers
             {
                 return BadRequest();
             }
-            
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
+            
             if (info == null)
             {
                 return RedirectToAction(nameof(LoginFail));
@@ -73,14 +74,13 @@ namespace Project.Controllers
                     user = await _userManager.FindByEmailAsync(email);
                     await _userManager.AddToRoleAsync(user, "User");
                 }
-                
             }
 
             //Because we're not saving users, just generate and send JWT token
             var token = GenerateToken(email);
             return Ok(token);
         }
-        
+
         private async Task CreateRoles()
         {
             if (!await _roleManager.RoleExistsAsync("User"))
@@ -88,7 +88,7 @@ namespace Project.Controllers
                 var role = new IdentityRole {Name = "User"};
                 await _roleManager.CreateAsync(role);
             }
-            
+
             if (!await _roleManager.RoleExistsAsync("Administrator"))
             {
                 var role = new IdentityRole {Name = "Administrator"};
@@ -126,3 +126,24 @@ namespace Project.Controllers
         }
     }
 }
+
+
+//        [HttpDelete("SignOut")]
+//        [Authorize(Policy = "Bearer")]
+//        public async Task<IActionResult> SignOut()
+//        {
+//            var info = await 
+//            if (info == null)
+//            {
+//                return RedirectToAction(nameof(ExternalLogin));
+//            }
+//            
+//            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+//            if (user == null)
+//                return new StatusCodeResult(StatusCodes.Status404NotFound);
+//
+//            var shit = info.AuthenticationTokens.ToString();
+//            
+////            _userManager.RemoveAuthenticationTokenAsync(user, info.LoginProvider, )
+//            return Ok();
+//        }
