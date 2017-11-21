@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Project.DbModels;
 using Project.Models;
 
@@ -59,7 +58,7 @@ namespace Project.Controllers
         {
             // Finds entity with ID that belongs to the current user
             var scannerEntity = _dbContext.Scanners.FirstOrDefault(s =>
-                s.Id == id && s.User.Email == User.Identity.Name);
+                s.Id == id && s.User.Email == User.Identity.Name);       
             
             // If no entity was found, return a 404NotFound code
             if (scannerEntity == null) 

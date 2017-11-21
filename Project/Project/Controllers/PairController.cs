@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
 using Project.DbModels;
 using Project.Models;
 
@@ -64,7 +61,7 @@ namespace Project.Controllers
         [Authorize(Policy = "Bearer")]
         public ActionResult GetPair(int id)
         {
-            // Finds  scanners entries that belong to the current user
+            // Get pair entry that belong to the current user
             var pairEntry = _dbContext.Pairs.FirstOrDefault(p =>
                 p.Id == id && p.User.Email == User.Identity.Name);
 
@@ -130,16 +127,28 @@ namespace Project.Controllers
         public ActionResult DeletePair(int id)
         {
             // Finds entity with ID
-            var pairEntity = _dbContext.Pairs.FirstOrDefault(p =>
-                p.Id == id && p.User.Email == User.Identity.Name);
-
+            var pairEntity = _dbContext.Pairs
+                .Include(p => p.Device)
+                .Include(p => p.User)
+                .FirstOrDefault(p =>p.Id == id && p.User.Email == User.Identity.Name);
+            
             // If no entity was found, return a 404NotFound code
             if (pairEntity == null)
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
-
+            
+            // TODO: Remove assossiated Pair Connection record if only it's used by this entity alone
+            
+            // Remove associated Device if only it's used by this entity alone
+            var associatedPairsToDevice = _dbContext.Pairs.Where(p =>
+                p.Device.Address == pairEntity.Device.Address);
+            var countOfPairsUsingDevice = associatedPairsToDevice.Count();
+            if (countOfPairsUsingDevice == 1)
+                _dbContext.Entry(associatedPairsToDevice.First()).State = EntityState.Deleted;
+            
             // Deletes the given entity
             _dbContext.Entry(pairEntity).State = EntityState.Deleted;
             _dbContext.SaveChanges();
+            
             return Ok();
         }
     }
