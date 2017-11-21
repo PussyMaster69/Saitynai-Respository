@@ -130,19 +130,16 @@ namespace Project.Controllers
             var pairEntity = _dbContext.Pairs
                 .Include(p => p.Device)
                 .Include(p => p.User)
-                .FirstOrDefault(p =>p.Id == id && p.User.Email == User.Identity.Name);
+                .FirstOrDefault(p => p.Id == id && p.User.Email == User.Identity.Name);
             
             // If no entity was found, return a 404NotFound code
             if (pairEntity == null)
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
             
-            // TODO: Remove assossiated Pair Connection record if only it's used by this entity alone
-            
             // Remove associated Device if only it's used by this entity alone
             var associatedPairsToDevice = _dbContext.Pairs.Where(p =>
                 p.Device.Address == pairEntity.Device.Address);
-            var countOfPairsUsingDevice = associatedPairsToDevice.Count();
-            if (countOfPairsUsingDevice == 1)
+            if (associatedPairsToDevice.Count() == 1)
                 _dbContext.Entry(associatedPairsToDevice.First()).State = EntityState.Deleted;
             
             // Deletes the given entity
