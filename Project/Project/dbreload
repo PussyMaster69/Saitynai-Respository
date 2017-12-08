@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dotnet ef database drop
+dotnet ef migrations remove
+dotnet ef migrations add Identity0
+dotnet ef database update
+
+echo "FINISHED!"
