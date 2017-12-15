@@ -6,6 +6,8 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 
 
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTab } from '@angular/material/tabs/typings/tab';
@@ -38,6 +40,8 @@ import { PairsComponent } from './pairs/pairs.component';
   ],
   imports: [
     BrowserModule,
+    MatInputModule,
+    MatFormFieldModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatToolbarModule,
