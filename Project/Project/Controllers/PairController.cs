@@ -115,6 +115,9 @@ namespace Project.Controllers
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
 
             // Updates pair's friendly name
+            if (pair.FriendlyName.Trim() == "")
+                return Ok();
+            
             pairEntity.FriendlyName = pair.FriendlyName;
             _dbContext.Entry(pairEntity).State = EntityState.Modified;
             _dbContext.SaveChanges();

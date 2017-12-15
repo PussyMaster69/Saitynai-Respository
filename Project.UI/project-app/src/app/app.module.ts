@@ -5,9 +5,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 
-
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material';
+  
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTab } from '@angular/material/tabs/typings/tab';
@@ -20,12 +18,12 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 
 import { AppComponent } from './app.component';
-import { NavPanelComponent } from './nav-panel/nav-panel.component';
-import { DevicesComponent } from './devices/devices.component';
-import { HomeComponent } from './home/home.component';
-import { ScannersComponent } from './scanners/scanners.component';
-import { AdminComponent } from './admin/admin.component';
-import { PairsComponent } from './pairs/pairs.component';
+import { NavPanelComponent } from './components/nav-panel/nav-panel.component';
+import { DevicesComponent } from './components/devices/devices.component';
+import { HomeComponent } from './components/home/home.component';
+import { ScannersComponent } from './components/scanners/scanners.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { PairsComponent } from './components/pairs/pairs.component';
 
 
 @NgModule({
@@ -40,8 +38,6 @@ import { PairsComponent } from './pairs/pairs.component';
   ],
   imports: [
     BrowserModule,
-    MatInputModule,
-    MatFormFieldModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatToolbarModule,
