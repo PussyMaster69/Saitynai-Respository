@@ -21,6 +21,7 @@ using Project.DbModels;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
+using Project.Services;
 
 namespace Project
 {
@@ -67,6 +68,17 @@ namespace Project
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build()));
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+
+            services.AddTransient<IWebService, WebService>();
+
             services.AddMvc();
         }
 
@@ -79,6 +91,7 @@ namespace Project
             }
 
             app.UseAuthentication();
+            app.UseCors("CorsPolicy");
             app.UseMvc();
         }
     }
