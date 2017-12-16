@@ -1,5 +1,5 @@
 
-<mat-toolbar color="primary">
+<!-- <mat-toolbar color="primary">
   
     <span>
       <a mat-button class="toolbar-button" routerLink="/">Home</a>
@@ -15,21 +15,24 @@
       <a mat-button class="toolbar-button" (click)="onLogin()">Sign In</a>
     </span>
 
-</mat-toolbar>
+</mat-toolbar> -->
 
 
 
 <!-- FOR LATER USE: -->
-    <!-- <span *ngIf="isLoggedIn()">
-      <a mat-button class="toolbar-button" routerLink="/">Home</a>
-      <a mat-button class="toolbar-button" routerLink="/devices">Devices</a>
-      <a mat-button class="toolbar-button" routerLink="/scanners">Scanners</a>
-    </span>
+<mat-toolbar color="primary">
+  <span *ngIf="isLoggedIn()">
+    <a mat-button class="toolbar-button" routerLink="/">Home</a>
+    <a mat-button class="toolbar-button" routerLink="/devices">Devices</a>
+    <a mat-button class="toolbar-button" routerLink="/scanners">Scanners</a>
+  </span>
 
-    <span class="fill-remaining-space"></span>
+  <span class="fill-remaining-space"></span>
+  
+  <span>
+    <a mat-button *ngIf="isLoggedIn() && isAdmin()" class="toolbar-button" routerLink="/admin">Admin</a>
+    <a mat-button *ngIf="isLoggedIn()" class="toolbar-button" (click)="onLogout()">Sign Out</a>
+    <a mat-button *ngIf="!isLoggedIn()" class="toolbar-button" (click)="onLogin()">Sign In</a>
+  </span>
+</mat-toolbar>
     
-    <span>
-      <a mat-button *ngIf="isLoggedIn() && isAdmin()" class="toolbar-button" routerLink="/admin">Admin</a>
-      <a mat-button *ngIf="isLoggedIn()" class="toolbar-button" (click)="onLogout()">Sign Out</a>
-      <a mat-button *ngIf="!isLoggedIn()" class="toolbar-button" (click)="onLogin()">Sign In</a>
-    </span> -->

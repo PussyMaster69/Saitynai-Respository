@@ -3,6 +3,8 @@ import { SessionService } from '../../services/session.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Settings } from '../../settings';
+import { Console } from '@angular/core/src/console';
+
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -31,8 +33,11 @@ export class NavPanelComponent implements OnInit {
   }
 
   public onLogin(): void {
-    alert(Settings.API_ORIGIN_API);
-    var jsonpCallback = '/';
+    // temporary authentfication:
+    console.log('login');
+    this.sessionService.setAdmin(Settings.IS_ADMIN);
+    this.sessionService.setToken(Settings.TOKEN);
+
     // this.httpClient.get<ILoginResult>(Settings.API_ORIGIN_API + '/api/login/external')
     // .subscribe(result => {
     //   this.sessionService.setAdmin(result.isAdmin);
@@ -41,6 +46,7 @@ export class NavPanelComponent implements OnInit {
   }
 
   public onLogout(): void {
+    console.log('logout');
     this.sessionService.logout();
     this.router.navigate(['/']);
   }
@@ -54,7 +60,6 @@ interface ILoginResult {
   token: string;
   isAdmin: string;
 }
-
 
 class LoginResult implements ILoginResult {
   requestAt: string;
