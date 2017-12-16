@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 
 import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
 import { DevicesComponent } from './components/devices/devices.component';   
 import { ScannersComponent } from './components/scanners/scanners.component';  
 import { AdminComponent } from './components/admin/admin.component';
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'devices', component: DevicesComponent },
   { path: 'scanners', component: ScannersComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'admin', component: AdminComponent }
 ];
 

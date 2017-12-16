@@ -31,8 +31,6 @@ export class NavPanelComponent implements OnInit {
   }
 
   public onLogin(): void {
-    alert(Settings.API_ORIGIN_API);
-    var jsonpCallback = '/';
     // this.httpClient.get<ILoginResult>(Settings.API_ORIGIN_API + '/api/login/external')
     // .subscribe(result => {
     //   this.sessionService.setAdmin(result.isAdmin);

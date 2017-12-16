@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Project.Models;
+using Project.Services;
 
 namespace Project.Controllers
 {
@@ -21,44 +22,35 @@ namespace Project.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebService _webService;
 
         public LoginController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager, IWebService webService)
         {
             _roleManager = roleManager;
             _signInManager = signInManager;
             _userManager = userManager;
+            _webService = webService;
         }
 
-        // LogIn method
-        [HttpGet]
-        [Route("External")]
-        public ActionResult ExternalLogin(string provider = "Google")
-        {
-            // Request a redirect to the external login provider.
-            const string redirectUrl = "/api/Login/ExternalCallback";
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return Challenge(properties, provider);
-        }
 
         [HttpGet]
-        [Route("ExternalCallback")]
+        [Route("ExternalLogin")]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ValidateAndGenerateToken(string googleToken)
         {
-            if (remoteError != null)
+            if (string.IsNullOrEmpty(googleToken))
             {
-                return BadRequest();
+                return new EmptyResult();
             }
-
-            var info = await _signInManager.GetExternalLoginInfoAsync();
+            var info = await _webService.ValidateGoogleToken(googleToken);
             
             if (info == null)
             {
                 return RedirectToAction(nameof(LoginFail));
             }
 
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var email = info.email;
 
             //Register or login user here
             var user = await _userManager.FindByEmailAsync(email);
@@ -79,7 +71,7 @@ namespace Project.Controllers
 
             //Because we're not saving users, just generate and send JWT token
             var token = await GenerateToken(email);
-            var authToken = GetAuthorizationToken(user, token);
+            var authToken = await GetAuthorizationToken(user, token);
             return Ok(authToken);
         }
 
