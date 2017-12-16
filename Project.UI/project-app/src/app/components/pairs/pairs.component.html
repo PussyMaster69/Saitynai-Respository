@@ -1,17 +1,17 @@
-<div class="example-container mat-elevation-z8">
-  <mat-table [dataSource]="myDataSource">
+<div>
+  <mat-table #table [dataSource]="myDataSource">
 
     <ng-container matColumnDef="Id">
       <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
-      <mat-cell *matCellDef="let pair">pair.Id</mat-cell>
+      <mat-cell *matCellDef="let pair">{{pair.Id}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="FriendlyName">
-      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-      <mat-cell *matCellDef="let pair">pair.FriendlyName</mat-cell>
+      <mat-header-cell *matHeaderCellDef>Device name</mat-header-cell>
+      <mat-cell *matCellDef="let pair">{{pair.FriendlyName}}</mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="this.selection.select(row); showInfoDialog(row)"></mat-row>
   </mat-table>
 </div>

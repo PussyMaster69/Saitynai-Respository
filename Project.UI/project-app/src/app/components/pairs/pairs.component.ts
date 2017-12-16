@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 
+
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatDialog, MatDialogRef} from '@angular/material/dialog';
+
+
 import { Pair } from '../../interfaces/pair';
+import { PairUpdateDialogComponent } from '../pair-update-dialog/pair-update-dialog.component';
 
 
 @Component({
@@ -11,16 +17,32 @@ import { Pair } from '../../interfaces/pair';
 })
 export class PairsComponent {
 
-  public displayedColumns = ['Id', 'Name'];
+  private initialSelection = [];
+  private allowMultiSelect = false;
+  
+  public selection = new SelectionModel<Pair>(this.allowMultiSelect, this.initialSelection);
+  public shit: string;
+
+  public displayedColumns = ['Id', 'FriendlyName'];
   public myDataSource = new MatTableDataSource<Pair>(PAIR_DATA);
 
-  // public applyFilter(filterValue: string): void {
-  //   filterValue = filterValue.trim(); // Remove whitespace
-  //   filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-  //   this.dataSource.filter = filterValue;
-  // }
+  constructor(public dialog: MatDialog) { }
 
+  public showInfoDialog(): void {
+    var selectedPair = this.selection.selected[0];
+    let dialogRef = this.dialog.open(PairUpdateDialogComponent, {
+      data: {id: selectedPair.Id, friendlyName: selectedPair.FriendlyName},
+      height: '500px'
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result)
+      {
+        selectedPair.FriendlyName = result;
+        // TODO: update pair in the database
+      }
+    });
+  }
 }
 
 const PAIR_DATA: Pair[] = [

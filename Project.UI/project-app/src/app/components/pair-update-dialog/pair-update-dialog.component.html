@@ -1,0 +1,19 @@
+<h1 mat-dialog-title><b>Info about pair</b></h1>
+<div mat-dialog-content>
+  <p><b>Pair Id:</b> {{data.id}}</p>
+  <p><b>Friendly Name:</b><br>
+  <mat-form-field>
+    <input matInput tabindex="1" [(ngModel)]="data.friendlyName">
+  </mat-form-field>
+  </p>
+  <p><b>Device Name:</b><br>
+    {{data.friendlyName}}
+  </p>
+  <p><b>Address:</b><br>
+    {{data.friendlyName}}
+  </p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="data.friendlyName" tabindex="2">Save</button>
+  <button mat-button (click)="onCancel()" tabindex="-1">Cancel</button>
+</div>

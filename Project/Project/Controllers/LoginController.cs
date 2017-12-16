@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Project.Models;
 
 namespace Project.Controllers
@@ -77,8 +78,9 @@ namespace Project.Controllers
             }
 
             //Because we're not saving users, just generate and send JWT token
-            var token = GenerateToken(email);
-            return Ok(token);
+            var token = await GenerateToken(email);
+            var authToken = GetAuthorizationToken(user, token);
+            return Ok(authToken);
         }
 
         private async Task CreateRoles()
@@ -96,6 +98,20 @@ namespace Project.Controllers
             }
         }
 
+        public async Task<string> GetAuthorizationToken(IdentityUser user, string token)
+        {
+            var requestAt = DateTime.Now;
+            var expiresIn = requestAt + TimeSpan.FromMinutes(120);
+
+            return JsonConvert.SerializeObject(new {
+                requestAt,
+                expiresIn,
+                tokenType = AuthenticationOptions.TokenType,
+                token,    
+                isAdmin = await _userManager.IsInRoleAsync(user, "Administrator")
+            });
+        }
+        
         private async Task<string> GenerateToken(string email)
         {
             var identity = new ClaimsIdentity(

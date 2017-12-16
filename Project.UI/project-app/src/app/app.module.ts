@@ -1,19 +1,27 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
- 
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+
 
 import { AppRoutingModule } from './app-routing.module';
+import { FormsModule } from '@angular/forms';
+import { CdkTableModule } from '@angular/cdk/table';    
+import {
+  MatFormFieldModule,
+  MatToolbarModule,
+  MatTabsModule,
+  MatMenuModule,
+  MatListModule,
+  MatCardModule,
+  MatButtonModule,
+  MatTableModule,
+  MatDialogModule,
+  MatInputModule 
+} from '@angular/material';
 
 
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatListModule } from '@angular/material/list';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
-import { CdkTableModule } from '@angular/cdk/table';
+import { SessionService } from './services/session.service';
 
 
 import { AppComponent } from './app.component';
@@ -23,6 +31,8 @@ import { HomeComponent } from './components/home/home.component';
 import { ScannersComponent } from './components/scanners/scanners.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { PairsComponent } from './components/pairs/pairs.component';
+import { PairUpdateDialogComponent } from './components/pair-update-dialog/pair-update-dialog.component';
+import { LoginComponent } from './components/login/login.component';
 
 
 @NgModule({
@@ -33,9 +43,13 @@ import { PairsComponent } from './components/pairs/pairs.component';
     HomeComponent,
     ScannersComponent,
     AdminComponent,
-    PairsComponent
+    PairsComponent,
+    PairUpdateDialogComponent,
+    LoginComponent
   ],
   imports: [
+    HttpClientModule,
+    HttpClientJsonpModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -46,9 +60,14 @@ import { PairsComponent } from './components/pairs/pairs.component';
     MatCardModule,
     MatButtonModule,
     MatTableModule,
-    CdkTableModule
+    CdkTableModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [ SessionService ],
+  bootstrap: [ AppComponent ],
+  entryComponents: [ PairUpdateDialogComponent ]
 })
 export class AppModule { }
