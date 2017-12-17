@@ -62,18 +62,28 @@ namespace Project.Controllers
         public ActionResult GetPair(int id)
         {
             // Get pair entry that belong to the current user
-            var pairEntry = _dbContext.Pairs.FirstOrDefault(p =>
-                p.Id == id && p.User.Email == User.Identity.Name);
+            var pairEntry = _dbContext.Pairs
+                .Include(p => p.Device)
+                .FirstOrDefault(p => p.Id == id && p.User.Email == User.Identity.Name);
 
             if (pairEntry == null)
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-            Pair pair = new Pair()
+            var pairedDevice = _dbContext.Devices.FirstOrDefault(d => 
+                d.Address == pairEntry.Device.Address);
+            
+            if (pairedDevice == null)
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+                
+            PairExtended pairFull = new PairExtended()
             {
                 Id = id,
                 FriendlyName = pairEntry.FriendlyName,
+                Name = pairedDevice.Name,
+                Address = pairedDevice.Address
             };
-            return Ok(pair);
+            
+            return Ok(pairFull);
         }
 
         [HttpGet]
@@ -101,7 +111,7 @@ namespace Project.Controllers
             }
             return Ok(pairsList);
         }
-
+    
         [HttpPut("{id}")]
         [Authorize(Policy = "Bearer")]
         public ActionResult UpdatePair(int id, [FromBody] Pair pair)

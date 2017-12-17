@@ -22,6 +22,7 @@ import {
 
 
 import { SessionService } from './services/session.service';
+import { DeviceService } from './services/device.service';
 
 
 import { AppComponent } from './app.component';
@@ -66,7 +67,7 @@ import { LoginComponent } from './components/login/login.component';
     FormsModule,
     MatInputModule,
   ],
-  providers: [ SessionService ],
+  providers: [ SessionService, DeviceService ],
   bootstrap: [ AppComponent ],
   entryComponents: [ PairUpdateDialogComponent ]
 })
