@@ -90,18 +90,18 @@ namespace Project.Controllers
             }
         }
 
-        public async Task<string> GetAuthorizationToken(IdentityUser user, string token)
+        public async Task<dynamic> GetAuthorizationToken(IdentityUser user, string token)
         {
             var requestAt = DateTime.Now;
             var expiresIn = requestAt + TimeSpan.FromMinutes(120);
 
-            return JsonConvert.SerializeObject(new {
+            return new {
                 requestAt,
                 expiresIn,
                 tokenType = AuthenticationOptions.TokenType,
                 token,    
                 isAdmin = await _userManager.IsInRoleAsync(user, "Administrator")
-            });
+            };
         }
         
         private async Task<string> GenerateToken(string email)
