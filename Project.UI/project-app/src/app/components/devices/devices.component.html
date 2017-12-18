@@ -1,7 +1,7 @@
-<mat-tab-group>
+<mat-tab-group fxHide.lt-sm="true">
   <mat-tab label="Active">
     <div>
-        <h3>Scanners</h3>
+        <h3>Active devices</h3>
         <p>
           <img src="../../../assets/bluetooth_red.svg" style="max-height: 450px;" alt="bluetooth_red">
         </p>
@@ -11,5 +11,10 @@
   <mat-tab label="History"></mat-tab>
 </mat-tab-group>
 
-
+<div fxShow [fxHide.lt-sm]="true">
+  <h3>Active devices</h3>
+  <p>
+    <img src="../../../assets/bluetooth_red.svg" style="max-height: 450px;" alt="bluetooth_red">
+  </p>    
+</div>
 
