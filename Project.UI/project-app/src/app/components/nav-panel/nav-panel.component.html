@@ -1,38 +1,37 @@
-
-<!-- <mat-toolbar color="primary">
-  
-    <span>
-      <a mat-button class="toolbar-button" routerLink="/">Home</a>
-      <a mat-button class="toolbar-button" routerLink="/devices">Devices</a>
-      <a mat-button class="toolbar-button" routerLink="/scanners">Scanners</a>
-    </span>
-
-    <span class="fill-remaining-space"></span>
-    
-    <span>
-      <a mat-button class="toolbar-button" routerLink="/admin">Admin</a>
-      <a mat-button class="toolbar-button" (click)="onLogout()">Sign Out</a>
-      <a mat-button class="toolbar-button" routerLink="/login">Sign In</a>
-    </span>
-
-</mat-toolbar> -->
-
-
-
-<!-- FOR LATER USE: -->
 <mat-toolbar color="primary">
-  <span *ngIf="isLoggedIn()">
+  <span fxHide.lt-sm="true" *ngIf="this.isLoggedIn">
     <a mat-button class="toolbar-button" routerLink="/">Home</a>
     <a mat-button class="toolbar-button" routerLink="/devices">Devices</a>
     <a mat-button class="toolbar-button" routerLink="/scanners">Scanners</a>
   </span>
 
+  <span *ngIf="this.isLoggedIn" fxHide [fxShow.lt-sm]="true" >
+    
+
+      <a mat-icon-button [matMenuTriggerFor]="links"><mat-icon svgIcon="hamburger"></mat-icon></a>
+
+      <mat-menu #links="matMenu">
+        <button mat-menu-item routerLink="/">Home</button>
+        <button mat-menu-item *ngIf="isAdmin()" routerLink="/admin">Admin</button>
+        <button mat-menu-item [matMenuTriggerFor]="devices">Devices</button>
+        <button mat-menu-item routerLink="/scanners">Scanners</button>
+      </mat-menu>
+      
+      <mat-menu #devices="matMenu">
+        <button mat-menu-item>Active</button>
+        <button mat-menu-item routerLink="/pairs">Pairs</button>
+        <button mat-menu-item>History</button>
+      </mat-menu>
+    
+  </span>
+
   <span class="fill-remaining-space"></span>
   
   <span>
-    <a mat-button *ngIf="isLoggedIn() && isAdmin()" class="toolbar-button" routerLink="/admin">Admin</a>
-    <a mat-button *ngIf="isLoggedIn()" class="toolbar-button" (click)="onLogout()">Sign Out</a>
-    <app-login *ngIf="!isLoggedIn()" (click)="onLogin()"></app-login>
+    <a mat-button fxHide.lt-sm="true" *ngIf="this.isLoggedIn && isAdmin()" class="toolbar-button" routerLink="/admin">Admin</a>
+    <a mat-button *ngIf="this.isLoggedIn" class="toolbar-button" (click)="onLogout()">Sign Out</a>
+    <app-login *ngIf="!this.isLoggedIn" (click)="onLogin()"></app-login>
   </span>
+  
 </mat-toolbar>
-    
+

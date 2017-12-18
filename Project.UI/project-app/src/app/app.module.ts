@@ -2,10 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 import { AppRoutingModule } from './app-routing.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from '@angular/cdk/table';    
 import {
   MatFormFieldModule,
@@ -17,7 +18,11 @@ import {
   MatButtonModule,
   MatTableModule,
   MatDialogModule,
-  MatInputModule 
+  MatInputModule,
+  MatCheckboxModule,
+  MatSidenavModule,
+  MatIconModule,
+  MatIconRegistry
 } from '@angular/material';
 
 
@@ -33,6 +38,7 @@ import { ScannersComponent } from './components/scanners/scanners.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { PairsComponent } from './components/pairs/pairs.component';
 import { PairUpdateDialogComponent } from './components/pair-update-dialog/pair-update-dialog.component';
+import { PairCreateDialogComponent } from './components/pair-create-dialog/pair-create-dialog.component';
 import { LoginComponent } from './components/login/login.component';
 
 
@@ -46,7 +52,8 @@ import { LoginComponent } from './components/login/login.component';
     AdminComponent,
     PairsComponent,
     PairUpdateDialogComponent,
-    LoginComponent
+    LoginComponent,
+    PairCreateDialogComponent
   ],
   imports: [
     HttpClientModule,
@@ -54,6 +61,7 @@ import { LoginComponent } from './components/login/login.component';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    FlexLayoutModule,
     MatToolbarModule,
     MatTabsModule,
     MatMenuModule,
@@ -65,10 +73,17 @@ import { LoginComponent } from './components/login/login.component';
     MatDialogModule,
     MatFormFieldModule,
     FormsModule,
+    ReactiveFormsModule,
     MatInputModule,
+    MatCheckboxModule,
+    MatSidenavModule,
+    MatIconModule,
   ],
-  providers: [ SessionService, DeviceService ],
+  providers: [ SessionService, DeviceService, MatIconRegistry ],
   bootstrap: [ AppComponent ],
-  entryComponents: [ PairUpdateDialogComponent ]
+  entryComponents: [ 
+    PairUpdateDialogComponent, 
+    PairCreateDialogComponent 
+  ]
 })
 export class AppModule { }

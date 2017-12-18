@@ -1,5 +1,5 @@
 export interface Pair {
-    Id: number;
-    FriendlyName: string;
+    id: number;
+    friendlyName: string;
     
 }

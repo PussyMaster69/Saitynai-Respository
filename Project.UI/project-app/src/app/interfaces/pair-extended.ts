@@ -1,6 +1,6 @@
-export interface PairExtended {
-    Id: number;
-    FriendlyName: string;
-    Name: string;
-    Address: string;    
+export interface  PairExtended {
+    address: string;
+    name: string;
+    id: number;
+    friendlyName: string;
 }

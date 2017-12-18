@@ -2,6 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {MatIconRegistry} from '@angular/material'
+import {DomSanitizer} from '@angular/platform-browser';
+
 
 
 import { SessionService } from '../../services/session.service';
@@ -19,14 +22,32 @@ const httpOptions = {
 })
 export class NavPanelComponent implements OnInit {
 
+  public isLoggedIn = false;
+
   public static updateUserLoginStatus: Subject<boolean> = new Subject();
 
-  constructor(private httpClient: HttpClient, private router: Router, private sessionService: SessionService) { }
+  constructor(
+    private httpClient: HttpClient, 
+    private router: Router, 
+    private sessionService: SessionService, 
+    public iconReg: MatIconRegistry,
+    public sanitizer: DomSanitizer) { 
+      iconReg.addSvgIcon(
+        'hamburger',
+        sanitizer.bypassSecurityTrustResourceUrl('../../../assets/Hamburger_icon.svg'));
+    }
 
   ngOnInit() {
+    if (this.IsLoggedIn()) {
+      this.isLoggedIn = true;
+    } else {
+      this.isLoggedIn = false;
+      this.router.navigate['/'];
+    }
   }
 
-  public isLoggedIn(): boolean {
+  public IsLoggedIn(): boolean {
+    console.log("check login");
     return this.sessionService.checkLogin();
   }
 
@@ -38,15 +59,19 @@ export class NavPanelComponent implements OnInit {
     // setup a listener
     NavPanelComponent.updateUserLoginStatus.subscribe(res => {
       console.log(res);
-      if (res) {
-        // this.router.navigate(['/login']);
+      if (this.sessionService.checkLogin()) {
+        this.isLoggedIn = res;
       }
     });
-    
   }
 
   public onLogout(): void {
+    this.isLoggedIn = false;
     this.sessionService.logout();
     this.router.navigate(['/']);
+  }
+
+  public openMenu(): void {
+
   }
 }

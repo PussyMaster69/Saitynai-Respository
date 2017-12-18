@@ -24,11 +24,10 @@ export class PairUpdateDialogComponent implements OnInit {
     console.log(id);
     this.deviceService.getPair(id).subscribe(pairInfo => {
       if (pairInfo != null) {
-        console.log(pairInfo.Id);
-        // this.data.id = pairInfo.Id;
-        // this.data.friendlyName = pairInfo.FriendlyName;
-        // this.data.name = pairInfo.Name;
-        // this.data.address = pairInfo.Address;
+        this.data.id = pairInfo.id;
+        this.data.friendlyName = pairInfo.friendlyName;
+        this.data.name = pairInfo.name;
+        this.data.address = pairInfo.address;
       }
     });
   }
@@ -40,8 +39,10 @@ export class PairUpdateDialogComponent implements OnInit {
 
   public onDelete(): void {
     // TODO: delete pair from database
-    var result = { 'action': 'delete' };
-    this.dialogRef.close(result);
+    this.deviceService.deletePair(this.data.id).subscribe(pair => {
+      var result = { 'action': 'delete' };
+      this.dialogRef.close(result); 
+    });
   }
 
   public onCancel(): void {

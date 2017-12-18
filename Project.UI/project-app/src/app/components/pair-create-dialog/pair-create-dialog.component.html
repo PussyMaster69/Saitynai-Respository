@@ -1,0 +1,30 @@
+<div class="example-container">
+  <h1 mat-dialog-title>Add device</h1>
+
+  <mat-form-field
+      [hideRequiredMarker]="options.value.hideRequired"
+      [floatLabel]="options.value.floatLabel">
+    <input matInput placeholder="Device name" [formControl]="this.name" [(ngModel)]="pair.name" required>
+    <mat-error *ngIf="name.invalid">{{getNameErrorMessage()}}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field [floatLabel]="options.value.floatLabel">
+    <input matInput placeholder="Device address" [formControl]="this.address" [(ngModel)]="pair.address" required>
+    <mat-error *ngIf="address.invalid">{{getAddressErrorMessage()}}</mat-error>
+  </mat-form-field>
+
+  <mat-checkbox class="my-checkbox" (change)="check()">More options</mat-checkbox>
+
+  <mat-form-field
+      *ngIf="this.moreOptions"
+      class="optional-form"
+      [hideRequiredMarker]="options.value.hideRequired"
+      [floatLabel]="options.value.floatLabel">
+    <input matInput placeholder="Friendly name" type="text" [(ngModel)]="pair.friendlyName">
+  </mat-form-field>
+
+  <div mat-dialog-actions class="dialog-actions">
+      <button mat-button (click)="save()" tabindex="2">Save</button>
+      <button mat-button (click)="cancel()" tabindex="-2">Cancel</button>
+  </div>
+</div>

@@ -7,6 +7,7 @@ import { LoginComponent } from './components/login/login.component';
 import { DevicesComponent } from './components/devices/devices.component';   
 import { ScannersComponent } from './components/scanners/scanners.component';  
 import { AdminComponent } from './components/admin/admin.component';
+import { PairsComponent } from './components/pairs/pairs.component';
 
 
 const routes: Routes = [
@@ -14,7 +15,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'devices', component: DevicesComponent },
   { path: 'scanners', component: ScannersComponent },
-  // { path: 'login', redirectTo: '' },
+  { path: 'pairs', component: PairsComponent },
   { path: 'admin', component: AdminComponent },
 ];
 

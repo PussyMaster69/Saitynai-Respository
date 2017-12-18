@@ -8,6 +8,7 @@ export class SessionService {
   private tokenKey = "token";
   private adminKey = "isAdmin";
   private token: string;
+  private tokenType: string;
 
   constructor(private http: HttpClient) { }
 
@@ -44,4 +45,8 @@ export class SessionService {
     }
     return this.token;
   } 
+
+  public getTokenType(): string {
+    return this.tokenType;
+  }
 }

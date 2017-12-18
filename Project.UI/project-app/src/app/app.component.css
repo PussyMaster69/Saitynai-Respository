@@ -1,0 +1,19 @@
+.footer-style {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: #efefef;
+    text-align: left;
+    font-size: 60%;
+    height: 60px;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+.body-style {
+    margin-bottom: 200px;
+}

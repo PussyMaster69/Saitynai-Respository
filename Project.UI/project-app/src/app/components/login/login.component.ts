@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs';
+
+import { NavPanelComponent } from '../nav-panel/nav-panel.component';
+import { Settings } from '../../settings';
+import { SessionService } from '../../services/session.service';
+
 declare let gapi: any;
 
 @Component({
@@ -12,13 +17,17 @@ declare let gapi: any;
 })
 
 export class LoginComponent implements OnInit {
-  PROVIDER_ID: string = "GOOGLE";
-  clientId = "968867183125-6vik6skj25h8kpjosgf3a0ed953rt7r7.apps.googleusercontent.com";
+  providerId: string;
+  clientId: string;
   auth2: any;
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private sessionService: SessionService) {
+    this.providerId = Settings.PROVIDER_ID;
+    this.clientId = Settings.CLIENT_ID;
+  }
+
   ngOnInit() {
-    this.loadScript(this.PROVIDER_ID,
+    this.loadScript(this.providerId,
       "//apis.google.com/js/platform.js",
       () => {
         gapi.load('auth2', () => {
@@ -26,7 +35,6 @@ export class LoginComponent implements OnInit {
             client_id: this.clientId,
             scope: 'email'
           });
-
         });
     });
   }
@@ -37,14 +45,17 @@ export class LoginComponent implements OnInit {
           promise.then(() => {          
             let authData = this.auth2.currentUser.get().getAuthResponse(true);
             console.log(authData.id_token);
-            this.http.get(`http://localhost:52230/api/login/externallogin?googleToken=${authData.id_token}`)
+            const url = `${Settings.API_ORIGIN_API}/api/login/externallogin?googleToken=${authData.id_token}`;
+            this.http.get(url)
             .map(res => res as Login)
             .subscribe(data => {
               console.log(data);
               console.log(data.token);
+              this.sessionService.setToken(data.token);
+              this.sessionService.setAdmin(data.isAdmin);
+              NavPanelComponent.updateUserLoginStatus.next(true);
             }); 
           });
-
   }
 
   private extractData(res: Response) {
@@ -73,6 +84,6 @@ private handleErrorObservable (error: Response | any) {
   expiresIn: string;
   tokenType: string;
   token: string;
-  isAdmin: boolean;
+  isAdmin: string;
 }
 

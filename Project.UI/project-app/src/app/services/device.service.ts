@@ -11,38 +11,54 @@ import { Settings } from '../settings';
 import { SessionService } from './session.service'
 
 
-const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/json'})
-};
+// const httpOptions = {
+//   headers: new HttpHeaders({'Content-Type': 'application/json'})
+// };
 
 
 @Injectable()
 export class DeviceService {
 
-  constructor(private httpClient: HttpClient, private sessionService: SessionService) { }
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Authorization': `Bearer ${this.sessionService.getLocalToken()}`,
+      'Content-Type': 'application/json'
+    })
+  };
+
+  constructor(private httpClient: HttpClient, private sessionService: SessionService) {
+  }
+
+  public addPair(pair: PairExtended): Observable<Pair> {
+    const url = `${Settings.API_ORIGIN_API}/api/pair`;
+    return this.httpClient.post<Pair>(url, pair, this.httpOptions);
+  }
 
   public getPair(id: number): Observable<PairExtended> {
     const url = `${Settings.API_ORIGIN_API}/api/pair/${id}`;
-    const options = httpOptions;
-    // options.headers.append('Bearer', this.sessionService.getLocalToken());
-    console.log(`Token_1: ${this.sessionService.getLocalToken().toString()}`);
-    
-
-    console.log(options.headers);
-
-    return this.httpClient.get<PairExtended>(url, options).pipe(
+    return this.httpClient.get<PairExtended>(url, this.httpOptions).pipe(
       tap(_ => this.log(`fetched device id=${id}`)),
       catchError(this.handleError<PairExtended>(`getDevice id=${id}`))
     );
   }
 
-  // public updatePair(pair: Pair): Observable<Pair> {
-  //   const url = `${Settings.API_ORIGIN_API}/api/pair/${pair.Id}`;
-  //   return this.httpClient.put<Pair>(url, pair, httpOptions).pipe(
-  //     tap(_ => this.log(`updated pair id=${pair.Id}`)),
-  //     catchError(this.handleError<any>('updatePair'))
-  //   );
-  // }
+  public getPairs(): Observable<Pair[]> {
+    const url = `${Settings.API_ORIGIN_API}/api/pair`;
+    return this.httpClient.get<Pair[]>(url, this.httpOptions);
+  }
+
+  public updatePair(pair: Pair): Observable<Pair> {
+    const url = `${Settings.API_ORIGIN_API}/api/pair/${pair.id}`;
+    return this.httpClient.put<Pair>(url, pair, this.httpOptions).pipe(
+      tap(_ => this.log(`updated pair id=${pair.id}`)),
+      catchError(this.handleError<any>('updatePair'))
+    );
+  }
+
+  public deletePair(id: number | string): Observable<Pair> {
+    const url = `${Settings.API_ORIGIN_API}/api/pair/${id}`;
+    return this.httpClient.delete<Pair>(url, this.httpOptions);
+  }
 
   /** Log a HeroService message with the console */
   private log(message: string) {
@@ -62,4 +78,8 @@ export class DeviceService {
       return of(result as T);
     };
   }
+}
+
+export interface IPairList {
+  pairList: Pair[]
 }
