@@ -40,6 +40,7 @@ export class SessionService {
   public getLocalToken(): string {
     if (!this.token) {
       this.token = sessionStorage.getItem(this.tokenKey);
+      console.log(`shit: ${this.token.toString()}`);
     }
     return this.token;
   } 

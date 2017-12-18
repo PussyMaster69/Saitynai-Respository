@@ -1,12 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { SessionService } from '../../services/session.service';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Settings } from '../../settings';
+
+
+import { SessionService } from '../../services/session.service';
+
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
+
 
 @Component({
   selector: 'app-nav-panel',
@@ -15,7 +19,7 @@ const httpOptions = {
 })
 export class NavPanelComponent implements OnInit {
 
-  private settings: Settings;
+  public static updateUserLoginStatus: Subject<boolean> = new Subject();
 
   constructor(private httpClient: HttpClient, private router: Router, private sessionService: SessionService) { }
 
@@ -31,35 +35,18 @@ export class NavPanelComponent implements OnInit {
   }
 
   public onLogin(): void {
-    alert(Settings.API_ORIGIN_API);
-    var jsonpCallback = '/';
-    // this.httpClient.get<ILoginResult>(Settings.API_ORIGIN_API + '/api/login/external')
-    // .subscribe(result => {
-    //   this.sessionService.setAdmin(result.isAdmin);
-    //   this.sessionService.setToken(result.token);
-    // }); 
+    // setup a listener
+    NavPanelComponent.updateUserLoginStatus.subscribe(res => {
+      console.log(res);
+      if (res) {
+        // this.router.navigate(['/login']);
+      }
+    });
+    
   }
 
   public onLogout(): void {
     this.sessionService.logout();
     this.router.navigate(['/']);
   }
-}
-
-
-interface ILoginResult {
-  requestAt: string;
-  expiresIn: string;
-  tokenType: string;
-  token: string;
-  isAdmin: string;
-}
-
-
-class LoginResult implements ILoginResult {
-  requestAt: string;
-  expiresIn: string;
-  tokenType: string;
-  token: string;
-  isAdmin: string;
 }

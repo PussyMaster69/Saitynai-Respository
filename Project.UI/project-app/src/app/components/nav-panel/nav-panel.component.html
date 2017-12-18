@@ -32,7 +32,7 @@
   <span>
     <a mat-button *ngIf="isLoggedIn() && isAdmin()" class="toolbar-button" routerLink="/admin">Admin</a>
     <a mat-button *ngIf="isLoggedIn()" class="toolbar-button" (click)="onLogout()">Sign Out</a>
-    <a mat-button *ngIf="!isLoggedIn()" class="toolbar-button" (click)="onLogin()">Sign In</a>
+    <app-login *ngIf="!isLoggedIn()" (click)="onLogin()"></app-login>
   </span>
 </mat-toolbar>
     

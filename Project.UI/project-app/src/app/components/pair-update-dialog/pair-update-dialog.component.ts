@@ -16,7 +16,7 @@ export class PairUpdateDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
-    // this.getPairInfo();
+    this.getPairInfo();
   }
 
   public getPairInfo(): void {

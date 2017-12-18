@@ -8,21 +8,29 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Pair } from '../interfaces/pair';
 import { PairExtended } from '../interfaces/pair-extended';
 import { Settings } from '../settings';
+import { SessionService } from './session.service'
 
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({'Content-Type': 'application/json'})
 };
 
 
 @Injectable()
 export class DeviceService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private sessionService: SessionService) { }
 
   public getPair(id: number): Observable<PairExtended> {
     const url = `${Settings.API_ORIGIN_API}/api/pair/${id}`;
-    return this.httpClient.get<PairExtended>(url).pipe(
+    const options = httpOptions;
+    // options.headers.append('Bearer', this.sessionService.getLocalToken());
+    console.log(`Token_1: ${this.sessionService.getLocalToken().toString()}`);
+    
+
+    console.log(options.headers);
+
+    return this.httpClient.get<PairExtended>(url, options).pipe(
       tap(_ => this.log(`fetched device id=${id}`)),
       catchError(this.handleError<PairExtended>(`getDevice id=${id}`))
     );

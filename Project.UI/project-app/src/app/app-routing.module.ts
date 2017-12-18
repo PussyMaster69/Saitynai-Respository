@@ -14,8 +14,8 @@ const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'devices', component: DevicesComponent },
   { path: 'scanners', component: ScannersComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'admin', component: AdminComponent }
+  // { path: 'login', redirectTo: '' },
+  { path: 'admin', component: AdminComponent },
 ];
 
 @NgModule({
